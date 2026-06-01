@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Event extends Model
@@ -22,11 +23,20 @@ class Event extends Model
     ];
 
     /**
-     * Fotografo assegnato all'evento
+     * Fotografo principale assegnato all'evento
      */
     public function photographer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'photographer_id');
+    }
+
+    /**
+     * Tutti i fotografi assegnati all'evento (relazione many-to-many)
+     */
+    public function photographers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'event_user')
+                    ->withTimestamps();
     }
 
     /**

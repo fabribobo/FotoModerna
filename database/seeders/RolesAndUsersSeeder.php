@@ -20,7 +20,7 @@ class RolesAndUsersSeeder extends Seeder
 
         // Crea utente amministratore
         $admin = User::create([
-            'name' => 'Admin FotoModerna',
+            'name' => 'Admin Fotomoderna',
             'email' => 'admin@fotomoderna.com',
             'password' => bcrypt('password123'),
         ]);
@@ -29,7 +29,7 @@ class RolesAndUsersSeeder extends Seeder
         // Crea utente fotografo
         $photographer = User::create([
             'name' => 'Marco Rossi',
-            'email' => 'marco@fotomoderna.com',
+            'email' => 'andrea@fotomoderna.com',
             'password' => bcrypt('password123'),
         ]);
         $photographer->assignRole($photographerRole);
@@ -44,35 +44,35 @@ class RolesAndUsersSeeder extends Seeder
 
         // Crea alcuni eventi di esempio
         Event::create([
-            'name' => 'Matrimonio Villa Parco',
+            'name' => 'Laurea Ingegneria Informatica',
             'event_date' => now()->addDays(10),
-            'location' => 'Villa del Parco, Milano',
-            'description' => 'Matrimonio elegante con cerimonia in giardino',
+            'location' => 'Università di Urbino, Urbino (PU)',
+            'description' => 'Servizio fotografico laurea magistrale',
             'photographer_id' => $photographer->id,
             'status' => 'planned',
         ]);
 
         Event::create([
-            'name' => 'Compleanno 18 anni',
+            'name' => 'Laurea Economia e Commercio',
             'event_date' => now()->subDays(2),
-            'location' => 'Location Centrale, Roma',
-            'description' => 'Festa di compleanno con tema dorato',
+            'location' => 'Università di Urbino, Urbino (PU)',
+            'description' => 'Servizio fotografico laurea triennale',
             'photographer_id' => $photographer->id,
             'status' => 'ongoing',
         ]);
 
         Event::create([
-            'name' => 'Laurea Medicina',
+            'name' => 'Laurea Medicina e Chirurgia',
             'event_date' => now()->subDays(7),
-            'location' => 'Università Statale, Bologna',
-            'description' => 'Servizio fotografico laurea',
+            'location' => 'Università di Urbino, Urbino (PU)',
+            'description' => 'Servizio fotografico laurea magistrale a ciclo unico',
             'photographer_id' => $photographer2->id,
             'status' => 'completed',
         ]);
 
         $this->command->info('Ruoli e utenti di test creati con successo!');
         $this->command->info('Admin: admin@fotomoderna.com / password123');
-        $this->command->info('Fotografo Marco: marco@fotomoderna.com / password123');
+        $this->command->info('Fotografo Marco: andrea@fotomoderna.com / password123');
         $this->command->info('Fotografa Laura: laura@fotomoderna.com / password123');
     }
 }

@@ -50,7 +50,7 @@ class PhotographerController extends Controller
         $photographer = auth()->user();
         
         $events = Event::where('photographer_id', $photographer->id)
-                      ->with('leads')
+                      ->withCount('leads')
                       ->latest()
                       ->paginate(15);
 
@@ -67,7 +67,9 @@ class PhotographerController extends Controller
             abort(403, 'Non autorizzato ad accedere a questo evento');
         }
 
-        $event->load(['leads.photos']);
+        $event->load(['leads' => function($query) {
+            $query->withCount('photos');
+        }, 'leads.photos']);
         
         return view('photographer.events.detail', compact('event'));
     }

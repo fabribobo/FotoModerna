@@ -16,6 +16,7 @@ class Lead extends Model
         'event_id',
         'photographer_id',
         'notes',
+        'status',
     ];
 
     /**

@@ -1,22 +1,27 @@
-# FotoModerna - Gestionale Studio Fotografico
+# https://sites.google.com/. vechio sito fotomoderna
+
+# Fotomoderna - Gestionale Studio Fotografico
 
 Web App completa per la gestione del flusso di lavoro tra fotografi sul campo, amministrazione e clienti finali.
 
 ## 🚀 Caratteristiche Principali
 
 ### Per i Fotografi
+
 - **Dashboard mobile-friendly** ottimizzata per eventi live
 - **Form di acquisizione lead** veloce durante gli eventi
 - **Upload rapido foto** con associazione automatica al cliente
 - **Gestione eventi** con stato real-time
 
 ### Per l'Amministrazione
+
 - **Panoramica completa** di tutti i lead e foto
 - **Workflow di pagamento** integrato
 - **Generazione automatica** di link temporanei post-pagamento
 - **Gestione ordini** con stati personalizzati
 
 ### Per i Clienti
+
 - **Accesso esclusivo** alle gallery private
 - **Download sicuro** con link temporanei (30 giorni)
 - **Esperienza utente** ottimizzata per il download
@@ -40,60 +45,68 @@ Web App completa per la gestione del flusso di lavoro tra fotografi sul campo, a
 ## ⚡ Installazione Rapida
 
 1. **Clona il repository**
-   ```bash
-   git clone <url-repository>
-   cd FotoModerna
-   ```
+
+    ```bash
+    git clone <url-repository>
+    cd Fotomoderna
+    ```
 
 2. **Installa le dipendenze**
-   ```bash
-   composer install
-   npm install
-   ```
+
+    ```bash
+    composer install
+    npm install
+    ```
 
 3. **Configura l'ambiente**
-   ```bash
-   cp .env.example .env
-   php artisan key:generate
-   ```
+
+    ```bash
+    cp .env.example .env
+    php artisan key:generate
+    ```
 
 4. **Configura database** (modifica `.env`)
-   ```env
-   DB_CONNECTION=sqlite
-   # oppure per MySQL/PostgreSQL:
-   # DB_CONNECTION=mysql
-   # DB_HOST=127.0.0.1
-   # DB_PORT=3306
-   # DB_DATABASE=fotomoderna
-   # DB_USERNAME=root
-   # DB_PASSWORD=
-   ```
+
+    ```env
+    DB_CONNECTION=sqlite
+    # oppure per MySQL/PostgreSQL:
+    # DB_CONNECTION=mysql
+    # DB_HOST=127.0.0.1
+    # DB_PORT=3306
+    # DB_DATABASE=fotomoderna
+    # DB_USERNAME=root
+    # DB_PASSWORD=
+    ```
 
 5. **Crea database SQLite** (se necessario)
-   ```bash
-   touch database/database.sqlite
-   ```
+
+    ```bash
+    touch database/database.sqlite
+    ```
 
 6. **Esegui migration e seeder**
-   ```bash
-   php artisan migrate
-   php artisan db:seed --class=RolesAndUsersSeeder
-   ```
+
+    ```bash
+    php artisan migrate
+    php artisan db:seed --class=RolesAndUsersSeeder
+    ```
 
 7. **Compila gli asset**
-   ```bash
-   npm run build
-   ```
+
+    ```bash
+    npm run build
+    ```
 
 8. **Avvia il server**
-   ```bash
-   php artisan serve
-   ```
+
+    ```bash
+    php artisan serve
+    ```
 
 9. **Accedi al sistema**
-   - URL: http://127.0.0.1:8000
-   - Admin: `admin@fotomoderna.com` / `password123`
-   - Fotografo: `marco@fotomoderna.com` / `password123`
+    - URL: http://127.0.0.1:8000
+    - Admin: `admin@fotomoderna.com` / `password123`
+    - Fotografo: `andrea@fotomoderna.com` / `password123`
 
 ## 🏗️ Architettura del Sistema
 
@@ -108,7 +121,7 @@ Web App completa per la gestione del flusso di lavoro tra fotografi sul campo, a
 ### Routing Strategy
 
 - `/admin/*` - Sezione amministratori
-- `/fotografo/*` - Sezione fotografi  
+- `/fotografo/*` - Sezione fotografi
 - `/download/{token}` - Accesso clienti con signed URLs
 
 ### Flusso di Lavoro
@@ -152,6 +165,7 @@ routes/
 ## 🚦 Sviluppo e Testing
 
 ### Comandi Utili
+
 ```bash
 # Avvia server di sviluppo
 php artisan serve
@@ -170,6 +184,7 @@ php artisan optimize:clear
 ```
 
 ### Testing Database
+
 ```bash
 # Reset database e re-seeding
 php artisan migrate:fresh --seed
@@ -179,24 +194,25 @@ php artisan migrate:fresh --seed
 
 1. **Configura server web** (Apache/Nginx)
 2. **Installa dipendenze senza dev**
-   ```bash
-   composer install --optimize-autoloader --no-dev
-   ```
+    ```bash
+    composer install --optimize-autoloader --no-dev
+    ```
 3. **Compila asset per produzione**
-   ```bash
-   npm run build
-   ```
+    ```bash
+    npm run build
+    ```
 4. **Configura `.env`** per produzione
 5. **Esegui ottimizzazioni**
-   ```bash
-   php artisan config:cache
-   php artisan route:cache
-   php artisan view:cache
-   ```
+    ```bash
+    php artisan config:cache
+    php artisan route:cache
+    php artisan view:cache
+    ```
 
 ## 🤝 Contributi
 
 Per contribuire al progetto:
+
 1. Fork il repository
 2. Crea un branch feature (`git checkout -b feature/AmazingFeature`)
 3. Commit le modifiche (`git commit -m 'Add AmazingFeature'`)
@@ -206,6 +222,7 @@ Per contribuire al progetto:
 ## 📞 Supporto
 
 Per domande o supporto:
+
 - Documentazione Laravel 11: https://laravel.com/docs/11.x
 - Issue tracker: [GitHub Issues]
 - Email: support@fotomoderna.com

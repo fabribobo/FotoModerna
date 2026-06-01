@@ -1,16 +1,22 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\PhotographerManagementController;
 use App\Http\Controllers\Photographer\PhotographerController;
 use App\Http\Controllers\Photographer\LeadController;
 use App\Http\Controllers\Photographer\PhotoUploadController;
 use App\Http\Controllers\DownloadController;
 use Illuminate\Support\Facades\Route;
 
-// Homepage
+// Homepage -> se loggato vai in dashboard, altrimenti login
 Route::get('/', function () {
-    return view('homepage');
+    if (auth()->check()) {
+        return redirect()->route('dashboard');
+    }
+
+    return redirect()->route('login');
 });
 
 // Auth routes - basic authentication
@@ -36,8 +42,29 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Dashboard
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
     
+    // Gestione Eventi
+    Route::get('/events', [EventController::class, 'index'])->name('events.index');
+    Route::get('/events/create', [EventController::class, 'create'])->name('events.create');
+    Route::post('/events', [EventController::class, 'store'])->name('events.store');
+    Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
+    Route::get('/events/{event}/edit', [EventController::class, 'edit'])->name('events.edit');
+    Route::put('/events/{event}', [EventController::class, 'update'])->name('events.update');
+    Route::delete('/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
+    
+    // Gestione Fotografi
+    Route::get('/photographers', [PhotographerManagementController::class, 'index'])->name('photographers.index');
+    Route::get('/photographers/create', [PhotographerManagementController::class, 'create'])->name('photographers.create');
+    Route::post('/photographers', [PhotographerManagementController::class, 'store'])->name('photographers.store');
+    Route::get('/photographers/{photographer}', [PhotographerManagementController::class, 'show'])->name('photographers.show');
+    Route::get('/photographers/{photographer}/edit', [PhotographerManagementController::class, 'edit'])->name('photographers.edit');
+    Route::put('/photographers/{photographer}', [PhotographerManagementController::class, 'update'])->name('photographers.update');
+    Route::delete('/photographers/{photographer}', [PhotographerManagementController::class, 'destroy'])->name('photographers.destroy');
+    
     // Gestione Lead
     Route::get('/leads', [AdminController::class, 'leads'])->name('leads.index');
+    Route::get('/leads/{lead}/edit', [AdminController::class, 'editLead'])->name('leads.edit');
+    Route::put('/leads/{lead}', [AdminController::class, 'updateLead'])->name('leads.update');
+    Route::delete('/leads/{lead}', [AdminController::class, 'destroyLead'])->name('leads.destroy');
     Route::get('/leads/{lead}', [AdminController::class, 'leadDetail'])->name('leads.show');
     
     // Gestione Foto

@@ -7,6 +7,7 @@ use App\Models\Lead;
 use App\Models\Event;
 use App\Models\Photo;
 use App\Models\Order;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -58,6 +59,51 @@ class AdminController extends Controller
         $lead->load(['event', 'photographer', 'photos', 'order']);
         
         return view('admin.leads.detail', compact('lead'));
+    }
+
+    /**
+     * Form per modificare un lead (admin)
+     */
+    public function editLead(Lead $lead)
+    {
+        $events = Event::orderBy('event_date', 'desc')->get();
+        $photographers = User::role('fotografo')->orderBy('name')->get();
+
+        return view('admin.leads.edit', compact('lead', 'events', 'photographers'));
+    }
+
+    /**
+     * Aggiorna un lead (admin)
+     */
+    public function updateLead(Request $request, Lead $lead)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'required|string|max:20',
+            'event_id' => 'required|exists:events,id',
+            'photographer_id' => 'required|exists:users,id',
+            'notes' => 'nullable|string',
+            'status' => 'required|string|max:50',
+        ]);
+
+        $lead->update($validated);
+
+        return redirect()
+            ->route('admin.leads.show', $lead)
+            ->with('success', 'Lead aggiornato con successo');
+    }
+
+    /**
+     * Cancella un lead (admin)
+     */
+    public function destroyLead(Lead $lead)
+    {
+        $lead->delete();
+
+        return redirect()
+            ->route('admin.leads.index')
+            ->with('success', 'Lead eliminato con successo');
     }
 
     /**
