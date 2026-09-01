@@ -4,10 +4,14 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PhotographerManagementController;
+use App\Http\Controllers\Admin\RosterController;
 use App\Http\Controllers\Photographer\PhotographerController;
 use App\Http\Controllers\Photographer\LeadController;
+use App\Http\Controllers\Photographer\OrderController as PhotographerOrderController;
 use App\Http\Controllers\Photographer\PhotoUploadController;
 use App\Http\Controllers\DownloadController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\StripeWebhookController;
 use Illuminate\Support\Facades\Route;
 
 // Homepage -> se loggato vai in dashboard, altrimenti login
@@ -50,7 +54,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/events/{event}/edit', [EventController::class, 'edit'])->name('events.edit');
     Route::put('/events/{event}', [EventController::class, 'update'])->name('events.update');
     Route::delete('/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
-    
+
+    // Elenco matricole attese (caricato prima dell'evento)
+    Route::get('/events/{event}/roster', [RosterController::class, 'index'])->name('events.roster');
+    Route::post('/events/{event}/roster', [RosterController::class, 'store'])->name('events.roster.store');
+    Route::delete('/events/{event}/roster/{student}', [RosterController::class, 'destroy'])->name('events.roster.destroy');
+
     // Gestione Fotografi
     Route::get('/photographers', [PhotographerManagementController::class, 'index'])->name('photographers.index');
     Route::get('/photographers/create', [PhotographerManagementController::class, 'create'])->name('photographers.create');
@@ -96,12 +105,16 @@ Route::middleware(['auth', 'photographer'])->prefix('fotografo')->name('photogra
     Route::get('/leads/{lead}', [LeadController::class, 'show'])->name('leads.show');
     Route::get('/leads/{lead}/edit', [LeadController::class, 'edit'])->name('leads.edit');
     Route::put('/leads/{lead}', [LeadController::class, 'update'])->name('leads.update');
-    
+
     // Upload Foto
     Route::get('/leads/{lead}/photos/upload', [PhotoUploadController::class, 'create'])->name('photos.upload');
     Route::post('/leads/{lead}/photos', [PhotoUploadController::class, 'store'])->name('photos.store');
     Route::post('/leads/{lead}/photos/multiple', [PhotoUploadController::class, 'uploadMultiple'])->name('photos.multiple');
     Route::delete('/leads/{lead}/photos/{photo}', [PhotoUploadController::class, 'destroy'])->name('photos.destroy');
+
+    // Incasso il giorno dell'evento (contanti o link Stripe da pagare anche dopo)
+    Route::get('/leads/{lead}/orders/create', [PhotographerOrderController::class, 'create'])->name('orders.create');
+    Route::post('/leads/{lead}/orders', [PhotographerOrderController::class, 'store'])->name('orders.store');
 });
 
 // ==========================
@@ -120,3 +133,17 @@ Route::prefix('download')->name('download.')->group(function () {
           ->name('all')
           ->middleware('signed');
 });
+
+// ==========================
+// PAGAMENTO ONLINE (STRIPE)
+// ==========================
+Route::prefix('pay')->name('payment.')->group(function () {
+    Route::get('/{order}', [PaymentController::class, 'show'])
+          ->name('pay')
+          ->middleware('signed');
+
+    Route::get('/{order}/success', [PaymentController::class, 'success'])->name('success');
+    Route::get('/{order}/cancel', [PaymentController::class, 'cancel'])->name('cancel');
+});
+
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])->name('stripe.webhook');

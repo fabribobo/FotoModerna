@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Photographer;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
+use App\Models\ExpectedStudent;
 use App\Models\Lead;
 use Illuminate\Http\Request;
 
@@ -27,16 +28,27 @@ class LeadController extends Controller
     /**
      * Form per creare nuovo lead
      */
-    public function create(Event $event = null)
+    public function create(Request $request, ?Event $event = null)
     {
         $photographer = auth()->user();
-        
+
         // Se non viene specificato un evento, prendi quelli attivi del fotografo
         $events = Event::where('photographer_id', $photographer->id)
                       ->whereIn('status', ['planned', 'ongoing'])
                       ->get();
 
-        return view('photographer.leads.create', compact('event', 'events'));
+        // Ricerca della matricola nell'elenco caricato dall'amministratore:
+        // se presente, precompiliamo nome e matricola nel form
+        $matricola = trim((string) $request->query('matricola'));
+        $expectedStudent = null;
+
+        if ($event && $matricola !== '') {
+            $expectedStudent = ExpectedStudent::where('event_id', $event->id)
+                                              ->where('matricola', $matricola)
+                                              ->first();
+        }
+
+        return view('photographer.leads.create', compact('event', 'events', 'matricola', 'expectedStudent'));
     }
 
     /**
@@ -51,6 +63,7 @@ class LeadController extends Controller
             'email' => 'required|email|max:255',
             'phone' => 'required|string|max:20',
             'event_id' => 'required|exists:events,id',
+            'matricola' => 'nullable|string|max:50',
             'notes' => 'nullable|string',
         ]);
 
@@ -64,9 +77,17 @@ class LeadController extends Controller
             'email' => $validated['email'],
             'phone' => $validated['phone'],
             'event_id' => $validated['event_id'],
+            'matricola' => $validated['matricola'] ?? null,
             'photographer_id' => $photographer->id,
             'notes' => $validated['notes'],
         ]);
+
+        // Se la matricola era nell'elenco atteso, segna lo studente come presente
+        if (!empty($validated['matricola'])) {
+            ExpectedStudent::where('event_id', $event->id)
+                           ->where('matricola', $validated['matricola'])
+                           ->update(['matched_lead_id' => $lead->id]);
+        }
 
         return redirect()
                ->route('photographer.leads.show', $lead)

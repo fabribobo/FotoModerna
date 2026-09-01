@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Lead;
 use App\Models\Order;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -82,35 +81,14 @@ class OrderController extends Controller
                    ->with('error', 'Questo ordine è già stato segnato come pagato');
         }
 
+        $order->payment_method = 'cash';
         $order->markAsPaid();
 
         // Invia email con link temporaneo
-        $this->sendDownloadEmail($order);
+        $order->sendDownloadEmail();
 
         return redirect()
                ->back()
                ->with('success', 'Ordine segnato come pagato. Email inviata al cliente.');
-    }
-
-    /**
-     * Invia email con link per il download
-     */
-    private function sendDownloadEmail(Order $order)
-    {
-        $downloadUrl = $order->getDownloadUrl();
-        $leadEmail = $order->lead->email;
-        $leadName = $order->lead->name;
-        $eventName = $order->event->name;
-
-        // Implementazione email - da personalizzare
-        Mail::send('emails.download-link', [
-            'leadName' => $leadName,
-            'eventName' => $eventName,
-            'downloadUrl' => $downloadUrl,
-            'expiresAt' => $order->download_expires_at->format('d/m/Y'),
-        ], function ($message) use ($leadEmail, $eventName) {
-            $message->to($leadEmail)
-                    ->subject("Le tue foto dell'evento: {$eventName}");
-        });
     }
 }

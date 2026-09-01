@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 
@@ -15,6 +16,9 @@ class Order extends Model
         'service_type',
         'amount',
         'payment_status',
+        'payment_method',
+        'stripe_checkout_session_id',
+        'stripe_payment_intent_id',
         'paid_at',
         'download_token',
         'download_expires_at',
@@ -84,5 +88,51 @@ class Order extends Model
         $this->paid_at = now();
         $this->generateDownloadToken();
         $this->save();
+    }
+
+    /**
+     * Genera l'URL firmato per il pagamento online (valido 30 giorni,
+     * cosi il cliente puo pagare anche nei giorni successivi all'evento)
+     */
+    public function getPaymentUrl(): string
+    {
+        return URL::temporarySignedRoute(
+            'payment.pay',
+            now()->addDays(30),
+            ['order' => $this->id]
+        );
+    }
+
+    /**
+     * Invia l'email con il link per il download delle foto
+     */
+    public function sendDownloadEmail(): void
+    {
+        Mail::send('emails.download-link', [
+            'leadName' => $this->lead->name,
+            'eventName' => $this->event->name,
+            'downloadUrl' => $this->getDownloadUrl(),
+            'expiresAt' => $this->download_expires_at->format('d/m/Y'),
+        ], function ($message) {
+            $message->to($this->lead->email)
+                    ->subject("Le tue foto dell'evento: {$this->event->name}");
+        });
+    }
+
+    /**
+     * Invia l'email con il link per pagare online (utile se il cliente
+     * preferisce pagare nei giorni successivi all'evento)
+     */
+    public function sendPaymentLinkEmail(): void
+    {
+        Mail::send('emails.payment-link', [
+            'leadName' => $this->lead->name,
+            'eventName' => $this->event->name,
+            'amount' => $this->amount,
+            'paymentUrl' => $this->getPaymentUrl(),
+        ], function ($message) {
+            $message->to($this->lead->email)
+                    ->subject("Completa il pagamento per l'evento: {$this->event->name}");
+        });
     }
 }

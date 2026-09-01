@@ -16,6 +16,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'photographer' => \App\Http\Middleware\PhotographerMiddleware::class,
         ]);
+
+        // Stripe invia le notifiche webhook senza token CSRF: la richiesta
+        // viene comunque autenticata verificando la firma nel controller
+        $middleware->validateCsrfTokens(except: [
+            'stripe/webhook',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

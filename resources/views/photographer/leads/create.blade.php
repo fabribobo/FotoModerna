@@ -12,6 +12,34 @@
                 </a>
             </div>
 
+            @if($event)
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                    <div class="p-6 bg-white border-b border-gray-200">
+                        <h2 class="text-sm font-semibold text-gray-700 mb-2">Cerca matricola</h2>
+                        <p class="text-sm text-gray-500 mb-3">
+                            Richiama la matricola: se è nell'elenco caricato dall'amministratore i dati verranno
+                            precompilati, altrimenti inseriscili qui sotto.
+                        </p>
+                        <form action="{{ route('photographer.leads.create', $event) }}" method="GET" class="flex gap-2">
+                            <input type="text" name="matricola" value="{{ $matricola }}" placeholder="Numero di matricola"
+                                class="flex-1 focus:ring-primary-500 focus:border-primary-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            <button type="submit"
+                                class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                Cerca
+                            </button>
+                        </form>
+
+                        @if($matricola !== '')
+                            @if($expectedStudent)
+                                <p class="mt-3 text-sm text-green-700">Matricola trovata in elenco: dati precompilati.</p>
+                            @else
+                                <p class="mt-3 text-sm text-yellow-700">Matricola non presente in elenco: inserisci i dati mancanti.</p>
+                            @endif
+                        @endif
+                    </div>
+                </div>
+            @endif
+
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
                     @if ($errors->any())
@@ -44,10 +72,19 @@
                             </select>
                         </div>
 
+                        <!-- Matricola -->
+                        <div class="mb-4">
+                            <label for="matricola" class="block text-sm font-medium text-gray-700">Matricola</label>
+                            <input type="text" name="matricola" id="matricola"
+                                value="{{ old('matricola', $matricola) }}"
+                                class="mt-1 focus:ring-primary-500 focus:border-primary-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                        </div>
+
                         <!-- Name -->
                         <div class="mb-4">
                             <label for="name" class="block text-sm font-medium text-gray-700">Nome Completo</label>
-                            <input type="text" name="name" id="name" value="{{ old('name') }}"
+                            <input type="text" name="name" id="name"
+                                value="{{ old('name', $expectedStudent->name ?? '') }}"
                                 class="mt-1 focus:ring-primary-500 focus:border-primary-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                                 required>
                         </div>

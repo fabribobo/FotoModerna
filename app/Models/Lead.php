@@ -14,6 +14,7 @@ class Lead extends Model
         'email',
         'phone',
         'event_id',
+        'matricola',
         'photographer_id',
         'notes',
         'status',

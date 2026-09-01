@@ -62,4 +62,12 @@ class Event extends Model
     {
         return $this->hasMany(Order::class);
     }
+
+    /**
+     * Elenco matricole attese all'evento (caricato dall'amministratore)
+     */
+    public function expectedStudents(): HasMany
+    {
+        return $this->hasMany(ExpectedStudent::class);
+    }
 }
